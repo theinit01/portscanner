@@ -12,7 +12,7 @@ The Python Port Scanner is a command-line tool that allows you to scan a target 
 ## Installation
 To install the Python Port Scanner, you can clone the repository from GitHub and install the required dependencies using pip:
 ```git clone https://github.com/your-username/python-port-scanner.git
-cd python-port-scanner
+cd portscanner
 pip install -r requirements.txt
 ```
 ## Usage
