@@ -19,6 +19,7 @@ pip install -r requirements.txt
 ```python portscanner.py <target> <start port> <end port>```
 
 For example, to scan port 80 on example.com, you can run:
+
 ``` python portscanner.py example.com 80 80```
 
 ## Contributing
