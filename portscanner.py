@@ -48,6 +48,13 @@ def resolve_target(target):
         print("[!!] Couldn't resolve the name")
         sys.exit()
 
+def identify_service(port, protocol):
+    try:
+        service_name = socket.getservbyport(port, protocol)
+        return service_name
+    except (OSError, socket.error):
+        return "Unknown"
+
 def scan_ports(target, start_port, end_port):
     open_ports = []
     closed_ports = []
@@ -64,12 +71,14 @@ def scan_ports(target, start_port, end_port):
 def print_results(target, open_ports, closed_ports, start_port, end_port):
     print(f"Scan report for {target}")
     print("Scanned", end_port - start_port, "ports")
-    print("PORT \t STATE")
+    print("PORT \t STATE \t SERVICE")
     for port in open_ports:
-        print(f"{GREEN} {port} {RESET} \t {GREEN}open{RESET}")
+        service=identify_service(port, "tcp")
+        print(f"{GREEN} {port} {RESET} \t {GREEN}open{RESET} \t {service}")
     if len(open_ports) == 0:
         for port in closed_ports:
-            print(f"{RED} {port} {RESET} \t {RED}closed{RESET}")
+            service=identify_service(port, "tcp")
+            print(f"{RED} {port} {RESET} \t {RED}closed{RESET}\t {service}")
 
 if __name__ == "__main__":
     now = datetime.now()
