@@ -4,7 +4,23 @@ import sys
 import time
 from datetime import datetime
 
-usage = "Usage: python3 scanner.py [Target] [Start_Port] [End_Port]"
+usage = """
+Usage: python3 scanner.py <Target> <Start_Port> <End_Port>
+
+Description:
+  This script is a simple port scanner that checks the status of ports within a specified range on a target host.
+
+Arguments:
+  - Target: The target host or IP address you want to scan. This should be a valid hostname or IPv4 address.
+
+  - Start_Port: The starting port of the scan range. Provide a port number between 1 and 65535.
+
+  - End_Port: The ending port of the scan range. Specify a port number between 1 and 65535. It should be greater than or equal to the Start_Port.
+
+Example:
+  python3 scanner.py example.com 80 100
+  This will scan ports 80 to 100 on the host 'example.com'.
+"""
 
 if (len(sys.argv) != 4):
     print(usage)
