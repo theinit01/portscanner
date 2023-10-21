@@ -5,6 +5,11 @@ import sys
 import time
 from datetime import datetime
 
+# ANSI escape codes for colors
+GREEN = '\033[92m'
+RED = '\033[91m'
+RESET = '\033[0m'
+
 usage = """
 Usage: python3 scanner.py <Target> <Start_Port> <End_Port>
 
@@ -61,10 +66,10 @@ def print_results(target, open_ports, closed_ports, start_port, end_port):
     print("Scanned", end_port - start_port, "ports")
     print("PORT \t STATE")
     for port in open_ports:
-        print(f"{port} \t open")
+        print(f"{GREEN} {port} {RESET} \t {GREEN}open{RESET}")
     if len(open_ports) == 0:
         for port in closed_ports:
-            print(f"{port} \t closed")
+            print(f"{RED} {port} {RESET} \t {RED}closed{RESET}")
 
 if __name__ == "__main__":
     now = datetime.now()
