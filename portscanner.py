@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import socket
+import argparse
 import sys
 import time
 from datetime import datetime
@@ -22,48 +23,60 @@ Example:
   This will scan ports 80 to 100 on the host 'example.com'.
 """
 
+
 if (len(sys.argv) != 4):
     print(usage)
     sys.exit()
 
-now = datetime.now()
-dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
-start_time = time.time()
+def parse_arguments():
+    parser = argparse.ArgumentParser(description="A simple port scanner.")
+    parser.add_argument("Target", help="The target host or IP address to scan.")
+    parser.add_argument("Start_Port", type=int, help="The starting port for the scan range.")
+    parser.add_argument("End_Port", type=int, help="The ending port for the scan range.")
+    return parser.parse_args()
 
-print("Started scan at", dt_string)
-
-try:
-    target = socket.gethostbyname(sys.argv[1])
-except socket.gaierror:
-    print("[!!] Couldn't resolve the name")
-    sys.exit()
-
-start_port = int(sys.argv[2])
-end_port = int(sys.argv[3])
-open_ports = []
-closed_ports = []
-
-for port in range(start_port, end_port+1):
+def resolve_target(target):
     try:
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.settimeout(0.5)
-            s.connect((target, port))
-            open_ports.append(port)
-    except:
-        closed_ports.append(port)
+        ip = socket.gethostbyname(target)
+        return ip
+    except socket.gaierror:
+        print("[!!] Couldn't resolve the name")
+        sys.exit()
 
-print(f"Scan report for {target}")
-print("Scanned", end_port-start_port, "ports")
-print("PORT \t STATE")
+def scan_ports(target, start_port, end_port):
+    open_ports = []
+    closed_ports = []
+    for port in range(start_port, end_port + 1):
+        try:
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                s.settimeout(0.5)
+                s.connect((target, port))
+                open_ports.append(port)
+        except:
+            closed_ports.append(port)
+    return open_ports, closed_ports
 
-for ports in open_ports:
-    print(f"{ports} \t open")
+def print_results(target, open_ports, closed_ports, start_port, end_port):
+    print(f"Scan report for {target}")
+    print("Scanned", end_port - start_port, "ports")
+    print("PORT \t STATE")
+    for port in open_ports:
+        print(f"{port} \t open")
+    if len(open_ports) == 0:
+        for port in closed_ports:
+            print(f"{port} \t closed")
 
-if len(open_ports) == 0:
-    for ports in closed_ports:
-        print(f"{ports} \t closed")
+if __name__ == "__main__":
+    now = datetime.now()
+    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+    start_time = time.time()
+    print("Started scan at", dt_string)
 
-end_time = time.time()
-
-print()
-print("Scan completed in %.2f seconds" % (end_time-start_time))
+    args = parse_arguments()
+    target = resolve_target(args.Target)
+    open_ports, closed_ports = scan_ports(target, args.Start_Port, args.End_Port)
+    print_results(target, open_ports, closed_ports, args.Start_Port, args.End_Port)  
+      
+    end_time = time.time()
+    print()
+    print("Scan completed in %.2f seconds" % (end_time-start_time))
