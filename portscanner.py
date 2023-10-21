@@ -12,7 +12,9 @@ RED = '\033[91m'
 RESET = '\033[0m'
 
 usage = """
-Usage: python scanner.py <Target> <Start_Port> <End_Port>
+
+Usage: python3 portscanner.py <Target> <Start_Port> <End_Port>
+
 
 Description:
   This script is a simple port scanner that checks the status of ports within a specified range on a target host.
