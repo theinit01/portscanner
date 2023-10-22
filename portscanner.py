@@ -30,7 +30,7 @@ Optional Arguments:
   --timeout <Timeout>: Specify a custom timeout value in seconds for port connections. Default is 0.5 seconds.
 
 Example:
-  python scanner.py example.com 80 100 --timeout 1.0
+  python portscanner.py example.com 80 100 --timeout 1.0 --output report.xml 
   This will scan ports 80 to 100 on the host 'example.com' with a custom timeout of 1.0 seconds.
 """
 
