@@ -4,6 +4,7 @@ import argparse
 import sys
 import time
 from datetime import datetime
+import threading
 
 # ANSI escape codes for colors
 GREEN = '\033[92m'
@@ -11,7 +12,9 @@ RED = '\033[91m'
 RESET = '\033[0m'
 
 usage = """
-Usage: python scanner.py <Target> <Start_Port> <End_Port>
+
+Usage: python3 portscanner.py <Target> <Start_Port> <End_Port>
+
 
 Description:
   This script is a simple port scanner that checks the status of ports within a specified range on a target host.
@@ -59,10 +62,12 @@ def identify_service(port, protocol):
     except (OSError, socket.error):
         return "Unknown"
 
-def scan_ports(target, start_port, end_port, timeout):
+def scan_ports_multithread(target, start_port, end_port, timeout):
     open_ports = []
     closed_ports = []
-    for port in range(start_port, end_port + 1):
+    threads = []
+
+    def scan_port(port):
         try:
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 s.settimeout(timeout)
@@ -70,6 +75,15 @@ def scan_ports(target, start_port, end_port, timeout):
                 open_ports.append(port)
         except:
             closed_ports.append(port)
+
+    for port in range(start_port, end_port + 1):
+        thread = threading.Thread(target=scan_port, args=(port,))
+        threads.append(thread)
+        thread.start()
+
+    for thread in threads:
+        thread.join()
+
     return open_ports, closed_ports
 
 def print_results(target, open_ports, closed_ports, start_port, end_port):
@@ -92,7 +106,7 @@ if __name__ == "__main__":
 
     args = parse_arguments()
     target = resolve_target(args.Target)
-    open_ports, closed_ports = scan_ports(target, args.Start_Port, args.End_Port, args.timeout)
+    open_ports, closed_ports = scan_ports_multithread(target, args.Start_Port, args.End_Port, args.timeout)
     print_results(target, open_ports, closed_ports, args.Start_Port, args.End_Port)  
       
     end_time = time.time()
