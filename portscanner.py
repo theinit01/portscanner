@@ -35,7 +35,7 @@ Example:
 """
 
 
-if (len(sys.argv) != 6 and len(sys.argv) != 4 ):
+if (len(sys.argv) != 8 and len(sys.argv) != 6 and len(sys.argv) != 4   ):
     print(usage)
     sys.exit()
 
@@ -45,6 +45,7 @@ def parse_arguments():
     parser.add_argument("Start_Port", type=int, help="The starting port for the scan range.")
     parser.add_argument("End_Port", type=int, help="The ending port for the scan range.")
     parser.add_argument("--timeout", type=float, default=0.5, help="Custom timeout for port connections (default: 0.5 seconds)")
+    parser.add_argument("--output", help="File path to save the scan report.")
     return parser.parse_args()
 
 def resolve_target(target):
@@ -98,6 +99,21 @@ def print_results(target, open_ports, closed_ports, start_port, end_port):
             service=identify_service(port, "tcp")
             print(f"{RED} {port} {RESET} \t {RED}closed{RESET}\t {service}")
 
+
+
+def save_report(output_file, target, open_ports, closed_ports, start_port, end_port):
+    with open(output_file, 'w') as file:
+        file.write(f"Scan report for {target}\n")
+        file.write(f"Scanned {end_port - start_port} ports\n")
+        file.write("PORT \t STATE \t SERVICE\n")
+        for port in open_ports:
+            service = identify_service(port, "tcp")
+            file.write(f"{port} \t open \t {service}\n")
+        if len(open_ports) == 0:
+            for port in closed_ports:
+                service = identify_service(port, "tcp")
+                file.write(f"{port} \t closed \t {service}\n")
+
 if __name__ == "__main__":
     now = datetime.now()
     dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
@@ -107,8 +123,29 @@ if __name__ == "__main__":
     args = parse_arguments()
     target = resolve_target(args.Target)
     open_ports, closed_ports = scan_ports_multithread(target, args.Start_Port, args.End_Port, args.timeout)
-    print_results(target, open_ports, closed_ports, args.Start_Port, args.End_Port)  
-      
+
+    if args.output:
+        save_report(args.output, target, open_ports, closed_ports, args.Start_Port, args.End_Port)
+        print_results(target, open_ports, closed_ports, args.Start_Port, args.End_Port)
+    else:
+        print_results(target, open_ports, closed_ports, args.Start_Port, args.End_Port)
+
     end_time = time.time()
     print()
-    print("Scan completed in %.2f seconds" % (end_time-start_time))
+    print("Scan completed in %.2f seconds" % (end_time - start_time))
+
+
+# if __name__ == "__main__":
+#     now = datetime.now()
+#     dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+#     start_time = time.time()
+#     print("Started scan at", dt_string)
+
+#     args = parse_arguments()
+#     target = resolve_target(args.Target)
+#     open_ports, closed_ports = scan_ports_multithread(target, args.Start_Port, args.End_Port, args.timeout)
+#     print_results(target, open_ports, closed_ports, args.Start_Port, args.End_Port)  
+      
+#     end_time = time.time()
+#     print()
+#     print("Scan completed in %.2f seconds" % (end_time-start_time))
