@@ -6,6 +6,7 @@ The Python Port Scanner is a command-line tool that allows you to scan a target 
 ## Features
 * Fast and efficient scanning of open ports
 * Supports scanning of a single port, a range of ports, or all ports
+* Service identification
 * Ability to scan multiple hosts in parallel
 * Command-line interface for ease of use
 
