@@ -48,13 +48,6 @@ def parse_arguments():
     parser.add_argument("--output", help="File path to save the scan report.")
     return parser.parse_args()
 
-    # Added a check to ensure End_Port is >= Start_Port.
-    if args.End_Port < args.Start_Port:
-        print(RED + "[Error] End_Port should be greater than or equal to Start_Port." + RESET)
-        sys.exit()
-
-    return args
-
 def resolve_target(target):
     try:
         ip = socket.gethostbyname(target)
