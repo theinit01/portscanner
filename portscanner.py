@@ -53,7 +53,8 @@ def resolve_target(target):
         ip = socket.gethostbyname(target)
         return ip
     except socket.gaierror:
-        print("[!!] Couldn't resolve the name")
+        # Improved error message when failing to resolve hostname
+        print(RED + f"[Error] Couldn't resolve the hostname: {target}. Please check the target and try again." + RESET)
         sys.exit()
 
 def identify_service(port, protocol):
@@ -74,7 +75,13 @@ def scan_ports_multithread(target, start_port, end_port, timeout):
                 s.settimeout(timeout)
                 s.connect((target, port))
                 open_ports.append(port)
-        except:
+        except socket.timeout:
+            # Added a specific message for timeouts
+            print(RED + f"[Warning] Timeout while connecting to port {port}." + RESET)
+            closed_ports.append(port)
+        except Exception as e:
+            # Added a general message for other exceptions
+            print(RED + f"[Error] Exception while scanning port {port}: {e}" + RESET)
             closed_ports.append(port)
 
     for port in range(start_port, end_port + 1):
