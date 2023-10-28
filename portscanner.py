@@ -133,19 +133,3 @@ if __name__ == "__main__":
     end_time = time.time()
     print()
     print("Scan completed in %.2f seconds" % (end_time - start_time))
-
-
-# if __name__ == "__main__":
-#     now = datetime.now()
-#     dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
-#     start_time = time.time()
-#     print("Started scan at", dt_string)
-
-#     args = parse_arguments()
-#     target = resolve_target(args.Target)
-#     open_ports, closed_ports = scan_ports_multithread(target, args.Start_Port, args.End_Port, args.timeout)
-#     print_results(target, open_ports, closed_ports, args.Start_Port, args.End_Port)  
-      
-#     end_time = time.time()
-#     print()
-#     print("Scan completed in %.2f seconds" % (end_time-start_time))
